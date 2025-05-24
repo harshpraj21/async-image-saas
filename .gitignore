@@ -1,0 +1,48 @@
+# Node.js (frontend/)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# Python (backend/)
+backend/__pycache__/
+backend/*.py[cod]
+backend/.venv/
+backend/venv/
+backend/.env*
+backend/*.log
+backend/logs/
+backend/.mypy_cache/
+backend/.pytest_cache/
+backend/.coverage
+backend/coverage.xml
+backend/htmlcov/
+backend/migrations/versions/
+
+# Docker & misc
+*.db
+*.pid
+celerybeat-schedule
+celerybeat.pid
+
+# OS/IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Environment configuration
+.env
+.env.*
+.envrc
+
+# Coverage reports
+coverage/
+*.cover
+*.py,cover
+
+# Build output
+dist/
+build/
