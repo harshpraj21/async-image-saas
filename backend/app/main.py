@@ -1,10 +1,11 @@
-import datetime
+from datetime import datetime
 from fastapi import FastAPI
-from loguru import logger
 
-from app.core.config import config
+from .routers import router
 
 app = FastAPI(title="Image SaaS API")
+
+app.include_router(router)
 
 
 @app.get("/health")

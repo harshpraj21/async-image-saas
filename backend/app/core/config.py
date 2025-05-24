@@ -19,7 +19,9 @@ class BaseConfig(BaseSettings):
     DB_NAME: Optional[str] = None
     DB_PORT: Optional[int] = None
 
+    SECRET_KEY: Optional[str] = None
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+
 
 config = BaseConfig()
-
-logger.info(f"Config loaded: {config.model_dump()}")
