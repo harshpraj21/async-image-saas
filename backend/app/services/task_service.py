@@ -10,6 +10,7 @@ from PIL import Image
 
 from app.core.config import config
 from app.models.tasks import Tasks
+from app.models.users import User
 
 
 def save_image(image: UploadFile) -> str:
@@ -29,16 +30,19 @@ def extract_metadata(image_path: str) -> str:
     )
 
 
-def create_task(db: Session, user_id: str, title: str | None, image: UploadFile):
-    logger.info(image)
+def create_task(db: Session, user: User, title: str | None, image: UploadFile):
     image_path = save_image(image)
     metadata = extract_metadata(image_path)
-    logger.info(f"Image: {image_path} \nMetadata: {metadata}\n{type(metadata)}")
 
     task = Tasks(
-        title=title, user_id=user_id, task_metadata=metadata, image_path=image_path
+        title=title, user_id=user.user_id, task_metadata=metadata, image_path=image_path
     )
     db.add(task)
+    
+    user.credits -= 1
+    db.add(user)
+
+
     db.commit()
     db.refresh(task)
 
