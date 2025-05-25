@@ -1,10 +1,15 @@
 services:
   backend:
     build: ./backend
-    container_name: fastapi_backend
+    container_name: images-saas-api
+    working_dir: /api
     volumes:
-      - ./backend:/code
+      - ./backend:/api
+      - uploads:/app/uploads 
     ports:
       - "8000:8000"
     env_file:
       - ./backend/.env
+
+volumes:
+  uploads:
