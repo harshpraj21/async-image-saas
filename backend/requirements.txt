@@ -9,3 +9,6 @@ alembic
 python-jose
 passlib[bcrypt]
 email-validator
+python-multipart
+pillow
+supabase

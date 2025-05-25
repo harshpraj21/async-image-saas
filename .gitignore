@@ -1,53 +1,106 @@
-.venv/
-venv/
-.env*
-node_modules/
+# Python - Backend
 
-# Node.js (frontend/)
-frontend/node_modules/
-frontend/.next/
-frontend/out/
-frontend/.env*
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-
-# Python (backend/)
-backend/__pycache__/
-backend/*.py[cod]
-backend/.venv/
-backend/venv/
-backend/.env*
-backend/*.log
-backend/logs/
-backend/.mypy_cache/
-backend/.pytest_cache/
-backend/.coverage
-backend/coverage.xml
-backend/htmlcov/
-backend/migrations/versions/
-
-# Docker & misc
+*.py[cod]
+*.pyo
+*.pyd
 *.db
-*.pid
-celerybeat-schedule
-celerybeat.pid
-
-# OS/IDE
-.DS_Store
-.idea/
-.vscode/
-
-# Environment configuration
+*.sqlite3
+*.log
+*.bak
+*.swp
+*.tmp
+*.env
 .env
 .env.*
-.envrc
+.venv/
+venv/
+env/
+ENV/
+__pycache__/
+backend/*.pyc
+backend/**/*/.pyc
+backend/uploads/
 
-# Coverage reports
+# Mypy / Coverage / Pytest
+.mypy_cache/
+.coverage
+.cache/
+.pytest_cache/
+htmlcov/
+
+# Alembic
+alembic/versions/*.pyc
+
+
+# Node.js - Frontend
+node_modules/
+.next/
+out/
+dist/
+build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.vite/
+.turbo/
+
+# Vercel / Netlify / Others
+.vercel/
+.netlify/
+.firebase/
+
+# Env Files
+frontend/.env*
+backend/.env*
+
+
+# IDEs / OS-specific
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+*.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+
+# # Docker
+
+# **/Dockerfile*
+# **/docker-compose*.yml
+# .docker/
+# docker/
+# *.pid
+
+
+# Logs and Dumps
+
+logs/
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+
+# Test Reports
+
 coverage/
 *.cover
 *.py,cover
+nosetests.xml
+coverage.xml
+*.lcov
 
-# Build output
-dist/
-build/
+
+# Frontend Cache
+frontend/.parcel-cache/
+frontend/.next/
+frontend/.nuxt/
+frontend/.cache/
+
+# Lock files (optional: ignore depending on team preference)
+package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
