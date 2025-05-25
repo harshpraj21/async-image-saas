@@ -49,7 +49,7 @@ class TaskRead(BaseModel):
     class Config:
         from_attributes = True
 
-class TaskStatus(BaseModel):
+class TaskReadStatus(BaseModel):
     id: uuid.UUID
     status: TaskStatus
     

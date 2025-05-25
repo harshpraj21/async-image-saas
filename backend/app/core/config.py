@@ -20,6 +20,8 @@ class BaseConfig(BaseSettings):
     SECRET_KEY: Optional[str] = None
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    
+    REDIS_URL: Optional[str] = None
 
     # SUPABASE_STORAGE_URL: str=None
     # SUPABASE_ACCESS_KEY: str=None

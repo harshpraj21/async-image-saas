@@ -11,23 +11,10 @@ from PIL import Image
 from app.core.config import config
 from app.models.tasks import Tasks
 from app.models.users import User
+from app.utils.image_utils import extract_metadata, save_image
+from app.workers.task_worker import process_image_task
 
 
-def save_image(image: UploadFile) -> str:
-    os.makedirs(config.UPLOAD_DIR, exist_ok=True)
-    extension = image.filename.split(".")[-1]
-    filename = f"{uuid.uuid4()}.{extension}"
-    file_path = os.path.join(config.UPLOAD_DIR, filename)
-    with open(file_path, "wb") as buffer:
-        buffer.write(image.file.read())
-    return file_path
-
-
-def extract_metadata(image_path: str) -> str:
-    image = Image.open(image_path)
-    return json.dumps(
-        {"format": image.format, "mode": image.mode, "size": image.size, "info" : image.info}
-    )
 
 
 def create_task(db: Session, user: User, title: str | None, image: UploadFile):
@@ -35,7 +22,7 @@ def create_task(db: Session, user: User, title: str | None, image: UploadFile):
     metadata = extract_metadata(image_path)
 
     task = Tasks(
-        title=title, user_id=user.user_id, task_metadata=metadata, image_path=image_path
+        title=title, user_id=user.id, task_metadata=metadata, image_path=image_path
     )
     db.add(task)
     
@@ -45,6 +32,9 @@ def create_task(db: Session, user: User, title: str | None, image: UploadFile):
 
     db.commit()
     db.refresh(task)
+    
+    logger.info("Calling process worker")
+    process_image_task.delay(str(task.id), image_path)
 
     return task
 

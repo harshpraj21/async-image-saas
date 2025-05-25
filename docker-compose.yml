@@ -2,12 +2,31 @@ services:
   backend:
     build: ./backend
     container_name: images-saas-api
-    working_dir: /api
+    working_dir: /code
     volumes:
-      - ./backend:/api
+      - ./backend:/code
       - uploads:/app/uploads 
     ports:
       - "8000:8000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - redis
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+  worker:
+    build: ./backend
+    container_name: images-saas-worker
+    command: celery -A app.workers.task_worker.celery_app worker --loglevel=info -Q image_tasks
+    working_dir: /code
+    volumes:
+      - ./backend:/code
+      - uploads:/app/uploads
+    depends_on:
+      - redis
+      - backend
     env_file:
       - ./backend/.env
 
