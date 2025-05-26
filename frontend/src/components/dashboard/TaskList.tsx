@@ -20,7 +20,7 @@ export function TaskList() {
             className="flex items-center justify-between border rounded p-3"
           >
             <span>{task.title}</span>
-            <Badge variant={getBadgeVariant(task.status)}>{task.status}</Badge>
+            <Badge variant={getBadgeVariant(task.status)} className="capitalize">{task.status}</Badge>
           </div>
         ))}
       </CardContent>
@@ -28,7 +28,7 @@ export function TaskList() {
   )
 }
 
-function getBadgeVariant(status: string) {
+export function getBadgeVariant(status: string) {
   switch (status) {
     case "queued":
       return "secondary"
