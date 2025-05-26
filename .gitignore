@@ -66,13 +66,9 @@ ehthumbs.db
 Desktop.ini
 
 
-# # Docker
-
-# **/Dockerfile*
-# **/docker-compose*.yml
-# .docker/
-# docker/
-# *.pid
+# Docker
+*.tar
+docker-compose.override.yml
 
 
 # Logs and Dumps
