@@ -1,14 +1,9 @@
-import json
-import os
 from typing import List
 import uuid
 from fastapi import UploadFile
-from sqlalchemy import Select
 from sqlmodel import Session, select
 from loguru import logger
-from PIL import Image
 
-from app.core.config import config
 from app.models.tasks import Tasks
 from app.models.users import User
 from app.utils.image_utils import extract_metadata, save_image

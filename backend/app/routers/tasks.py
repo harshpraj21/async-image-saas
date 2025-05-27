@@ -64,7 +64,7 @@ def get_task(
 ):
     task = get_task_by_id(db, task_id=task_id, user_id=current_user.id)
     if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
     return task
 
 
@@ -78,7 +78,7 @@ def get_task_status(
 ):
     task = get_task_by_id(db, task_id=task_id, user_id=current_user.id)
     if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
     return task
 
 
@@ -90,5 +90,5 @@ def delete_task_route(
 ):
     deleted = delete_task(db, task_id, current_user.id)
     if not deleted:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
     return
