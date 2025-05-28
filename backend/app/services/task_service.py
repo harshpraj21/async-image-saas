@@ -7,7 +7,7 @@ from loguru import logger
 from app.models.tasks import Tasks
 from app.models.users import User
 from app.utils.image_utils import extract_metadata, save_image
-from app.workers.task_worker import process_image_task
+from app.workers.task_worker import celery_app
 
 
 def create_task(db: Session, user: User, title: str | None, image: UploadFile):
@@ -27,7 +27,11 @@ def create_task(db: Session, user: User, title: str | None, image: UploadFile):
         db.refresh(task)
 
         logger.info(f"Created task {task.id} for user {user.email}, sending to worker")
-        process_image_task.delay(str(task.id), image_path)
+        # process_image_task.delay(str(task.id), image_path)
+        celery_app.send_task(
+            "app.workers.task_worker.process_image_task",
+            args=[str(task.id), image_path],
+        )
 
         return task
     except Exception as e:
