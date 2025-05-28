@@ -211,7 +211,7 @@ Enable the following events:
 
 - `payment.captured`
 - `payment.failed`
-- `order.paid`
+- `refund.created`
 
 5. **Implement Webhook Handler**
 
