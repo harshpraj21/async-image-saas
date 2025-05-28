@@ -7,6 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
+import { API } from "@/lib/api"
+import { useRouter } from "next/navigation"
+import { toast, Toaster } from "sonner"
 
 const formSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -18,6 +21,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>
 
 export default function CreateTaskPage() {
+  const router = useRouter()
   const {
     register,
     handleSubmit,
@@ -31,12 +35,29 @@ export default function CreateTaskPage() {
 
   const imageFile = watch("image")?.[0]
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", data)
-    // You can use FormData to send image + metadata to backend here
+  const onSubmit = async (data: FormData) => {
+    const formData = new FormData()
+    formData.append("title", data.title)
+    formData.append("image", data.image[0]) // single file
+
+    try {
+      const res = await API.post("/tasks/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+
+      toast.success("Task submitted successfully")
+      router.back()
+    } catch (err: any) {
+      const detail = err?.response?.data?.detail || "Something went wrong."
+      console.log(err);
+      
+      toast.error(detail)
+    }
   }
 
-  // Show preview
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
@@ -79,6 +100,7 @@ export default function CreateTaskPage() {
       <Button type="submit" className="w-full">
         Submit
       </Button>
+      <Toaster/>
     </form>
   )
 }

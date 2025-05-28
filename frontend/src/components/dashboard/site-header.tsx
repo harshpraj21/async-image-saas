@@ -3,12 +3,14 @@
 import { Separator } from "@/components/ui/separator"
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import { usePathname } from "next/navigation"
-import { BuyCreditDialog } from "../BuyCreditDialog"
+import { BuyCreditDialog } from "../dialogs/BuyCreditDialog"
+
 
 const routeMap: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/tasks": "Tasks",
   "/profile": "Profile",
+  "/user/profile": "Profile",
   "/tasks/create-task": "Create Task"
 }
 

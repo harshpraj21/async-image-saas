@@ -7,6 +7,10 @@ import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Button } from "@/components/ui/button"
 import { IconTrash } from "@tabler/icons-react"
+import { toast } from "sonner"
+import { API } from "@/lib/api"
+import { getImageUrl } from "@/lib/utils"
+import { DeleteTaskDialog } from "@/components/dialogs/DeleteTaskDialog"
 
 type Task = {
     id: string
@@ -19,22 +23,38 @@ type Task = {
 }
 
 export default function TaskDetailPage() {
-    const { id } = useParams()
-    const [task, setTask] = useState<Task >({
-        "id": "631db470-ffac-11ee-9402-0242ac120002",
-        "title": "Grayscale Portrait",
-        "image_path": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=400&fit=crop",
-        "status": "completed",
-        "task_metadata": {
-            "operation": "grayscale",
-            "user_id": "user_123",
-            "priority": "normal"
-        },
-        "created_at": "2024-05-20T14:32:00Z",
-        "result_path": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=400&fit=crop"
-    }
-    )
+    const params = useParams()
+    const id = typeof params.id === "string" ? params.id : ""
 
+    const [task, setTask] = useState<Task | null>(null)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        if (!id) return
+
+        const fetchTask = async () => {
+            try {
+                const res = await API.get(`/tasks/${id}`)
+                setTask(res.data)
+            } catch (err: any) {
+                toast.error(err?.response?.data?.detail || "Failed to load task.")
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchTask()
+    }, [id])
+
+
+
+    if (loading || !task) {
+        return (
+            <div className="space-y-4 p-4">
+                <Skeleton className="h-40 w-full rounded" />
+            </div>
+        )
+    }
 
     return (
         <div className="space-y-4 p-4">
@@ -44,33 +64,21 @@ export default function TaskDetailPage() {
                         <span>{task.title || "Untitled Task"}</span>
                         <div className="flex items-center gap-2">
                             <Badge className="capitalize">{task.status}</Badge>
-                            <Button
-                                size="icon"
-                                variant="ghost"
-                                onClick={() => {
-                                    // TODO: Confirm + call DELETE API
-                                    console.log("Delete task", task.id)
-                                }}
-                            >
-                                <IconTrash className="w-4 h-4 text-red-500" />
-                                <span className="sr-only">Delete Task</span>
-                            </Button>
+                            <DeleteTaskDialog taskId={task.id} />
                         </div>
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-
-
-                    <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex flex-col md:flex-row gap-10">
                         <div>
-                            <p className="text-sm font-medium">Uploaded Image</p>
-                            <img src={task.image_path} alt="Uploaded" className="w-48 rounded border" />
+                            <p className="text-sm font-medium py-2.5">Uploaded Image</p>
+                            <img src={getImageUrl(task.image_path)} alt="Uploaded" className="w-48 rounded border" />
                         </div>
 
                         {task.result_path && (
                             <div>
-                                <p className="text-sm font-medium">Processed Result</p>
-                                <img src={task.result_path} alt="Processed" className="w-48 rounded border" />
+                                <p className="text-sm font-medium py-2.5">Processed Result</p>
+                                <img src={getImageUrl(task.result_path)} alt="Processed" className="w-48 rounded border" />
                             </div>
                         )}
                     </div>

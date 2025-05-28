@@ -21,11 +21,6 @@ const NAV_ITEMS = [
   { title: "Tasks", url: "/tasks", icon: IconListDetails },
 ]
 
-const USER = {
-  name: "shadcn",
-  email: "m@example.com",
-  avatar: "/avatars/shadcn.jpg",
-}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
@@ -55,7 +50,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <IconCirclePlusFilled />
           <span>Create Task</span>
         </SidebarMenuButton>
-        <NavUser user={USER} />
+        <NavUser/>
       </SidebarFooter>
     </Sidebar>
   )

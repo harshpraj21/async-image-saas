@@ -1,28 +1,63 @@
+"use client"
+import { useEffect, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { API } from "@/lib/api"
+import { Skeleton } from "../ui/skeleton"
+import { useRouter } from "next/navigation"
 
-const mockTasks = [
-  { id: 1, title: "Sunset.jpg", status: "queued" },
-  { id: 2, title: "Profile.png", status: "processing" },
-  { id: 3, title: "House.jpeg", status: "completed" },
-]
+export function LatestTaskList() {
+  const [tasks, setTasks] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const router = useRouter();
 
-export function TaskList() {
+
+  useEffect(() => {
+
+    async function fetchTasks() {
+      try {
+        const res = await API.get("/tasks?limit=3")
+        setTasks(res.data.results)
+      } catch (error) {
+        console.error("Failed to fetch tasks:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchTasks()
+  }, [])
+
+
   return (
-    <Card className="@container/card ">
+    <Card className="@container/card">
       <CardHeader>
-        <CardTitle>Tasks</CardTitle>
+        <CardTitle>Latest Tasks</CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-4">
-        {mockTasks.map((task) => (
-          <div
-            key={task.id}
-            className="flex items-center justify-between border rounded p-3"
-          >
-            <span>{task.title}</span>
-            <Badge variant={getBadgeVariant(task.status)} className="capitalize">{task.status}</Badge>
-          </div>
-        ))}
+        {loading ? (
+          <>
+            <Skeleton className="h-10 w-full rounded" />
+            <Skeleton className="h-10 w-full rounded" />
+            <Skeleton className="h-10 w-full rounded" />
+          </>
+        ) : tasks.length > 0 ? (
+          tasks.map((task) => (
+            <div
+              onClick={() => router.push(`/tasks/${task.id}`)}
+              key={task.id}
+              className="flex items-center justify-between border rounded p-3 cursor-pointer"
+            >
+              <span>{task.title}</span>
+              <Badge variant={getBadgeVariant(task.status)} className="capitalize">
+                {task.status}
+              </Badge>
+            </div>
+          ))
+        ) : (
+          <div>No Task Found</div>
+        )}
       </CardContent>
     </Card>
   )
