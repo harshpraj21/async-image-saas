@@ -1,5 +1,7 @@
+import traceback
 import uuid
 from fastapi import HTTPException, status
+from loguru import logger
 import razorpay
 from sqlmodel import Session, select
 
@@ -17,11 +19,12 @@ from app.models.payment import (
 )
 from app.models.users import User
 
+
 _client = razorpay.Client(auth=(config.RAZORPAY_KEY_ID, config.RAZORPAY_KEY_SECRET))
 
 
 def get_all_credit_plans(db: Session):
-    return db.exec(select(CreditPlan)).all()
+    return db.exec(select(CreditPlan).order_by(CreditPlan.credits.asc())).all()
 
 
 def create_credit_order(
@@ -30,20 +33,22 @@ def create_credit_order(
     plan = db.get(CreditPlan, plan_id)
     if not plan:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-
-    razorpay_order = _client.order.create(
-        {
-            "amount": plan.price_in_rupees * 100,
+    try:
+        payload = {
+            "amount": plan.price * 100,
             "currency": "INR",
-            "receipt": f"receipt_{uuid.uuid4()}",
             "payment_capture": 1,
         }
-    )
+        logger.info(payload)
+        razorpay_order = _client.order.create(payload)
+    except Exception as e:
+        logger.info(f"Error: {e}\n{traceback.format_exc()}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     order = CreditOrder(
         user_id=user_id,
         razorpay_order_id=razorpay_order["id"],
-        credits_requested=plan.credit_amount,
+        credits_requested=plan.credits,
         amount=razorpay_order["amount"],
         currency="INR",
         status=OrderStatus.created,
@@ -55,9 +60,9 @@ def create_credit_order(
     return order
 
 
-def verify_signature(payload, signature, secret):
+def verify_signature(raw_body: bytes, signature: str, secret: str) -> bool:
     generated_signature = hmac.new(
-        bytes(secret, "utf-8"), bytes(payload, "utf-8"), hashlib.sha256
+        key=bytes(secret, "utf-8"), msg=raw_body, digestmod=hashlib.sha256
     ).hexdigest()
     return hmac.compare_digest(generated_signature, signature)
 
@@ -85,8 +90,6 @@ def handle_payment_webhook(payload: dict, db: Session):
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Order not found",
         )
-
-    # Initialize or get existing payment history
     payment_log = db.exec(
         select(PaymentHistory).where(PaymentHistory.payment_id == payment_id)
     ).first()
@@ -108,6 +111,7 @@ def handle_payment_webhook(payload: dict, db: Session):
         user = db.exec(select(User).where(User.id == order.user_id)).first()
         user.credits += order.credits_requested
         db.add(user)
+        logger.success("Payment Successful. User credits added")
 
     elif event == "payment.failed":
         order.status = OrderStatus.failed

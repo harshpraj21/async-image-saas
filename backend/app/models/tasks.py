@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 import json
-from typing import Optional
+from typing import List, Optional
 import uuid
 from pydantic import BaseModel, field_validator
 from sqlmodel import Field, SQLModel
@@ -48,6 +48,11 @@ class TaskRead(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class TaskPagination(BaseModel):
+    total: int
+    results: List[TaskRead]
 
 
 class TaskReadStatus(BaseModel):

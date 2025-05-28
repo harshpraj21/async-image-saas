@@ -24,8 +24,8 @@ class CreditPlan(SQLModel, table=True):
     __tablename__ = "credit_plans"
 
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    credit_amount: int = Field(..., gt=0)
-    price_in_rupees: int = Field(..., gt=0)
+    credits: int = Field(..., gt=0)
+    price: int = Field(..., gt=0)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -40,7 +40,8 @@ class CreditOrder(SQLModel, table=True):
     currency: str = Field(default="INR", max_length=10)
     status: OrderStatus = Field(default=OrderStatus.created)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    
+
+
 class PaymentHistory(SQLModel, table=True):
     __tablename__ = "payment_history"
 
@@ -55,6 +56,24 @@ class PaymentHistory(SQLModel, table=True):
 
 
 class RazorpayOrderResponse(BaseModel):
-    order_id: str
+    id: uuid.UUID
+    credits_requested: int
+    razorpay_order_id: str
     amount: int
-    currency: str
+    currency: str 
+    status: OrderStatus
+    
+    class Config:
+        from_attributes = True
+
+
+class CreditPlanRead(BaseModel):
+    id: uuid.UUID
+    credits: int
+    price: int
+
+    class Config:
+        from_attributes = True
+        
+class CreateOrderRequest(BaseModel):
+    plan_id: uuid.UUID

@@ -9,6 +9,7 @@ class BaseConfig(BaseSettings):
     )
 
     DEBUG: bool = True
+    FRONTEND_DOMAIN: Optional[str] = None 
 
     DB_HOST: Optional[str] = None
     DB_PASSWORD: Optional[str] = None
