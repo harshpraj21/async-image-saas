@@ -9,8 +9,7 @@ A scalable SaaS platform where users can upload images with metadata, which are 
 **Backend**: FastAPI, PostgreSQL (Supabase), Celery, Redis  
 **Frontend**: Next.js (App Router), TailwindCSS, Shadcn UI  
 **Payments**: Razorpay  
-**DevOps**: Docker, Docker Compose  
-**Hosting**: Render/Supabase (Backend), Vercel (Frontend)
+**DevOps**: Docker, Docker Compose
 
 ---
 
