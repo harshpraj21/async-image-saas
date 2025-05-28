@@ -1,4 +1,3 @@
-import traceback
 import uuid
 from fastapi import HTTPException, status
 from loguru import logger
@@ -32,6 +31,7 @@ def create_credit_order(
 ) -> CreditOrder:
     plan = db.get(CreditPlan, plan_id)
     if not plan:
+        logger.warning(f"Credit plan not found: {plan_id}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     try:
         payload = {
@@ -40,9 +40,10 @@ def create_credit_order(
             "payment_capture": 1,
         }
         logger.info(payload)
+        logger.info(f"Creating Razorpay order with payload: {payload}")
         razorpay_order = _client.order.create(payload)
     except Exception as e:
-        logger.info(f"Error: {e}\n{traceback.format_exc()}")
+        logger.error(f"Razorpay order creation failed: {e}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     order = CreditOrder(
@@ -57,6 +58,7 @@ def create_credit_order(
     db.add(order)
     db.commit()
     db.refresh(order)
+    logger.success(f"Created credit order {order.id} for user {user_id}")
     return order
 
 
@@ -86,6 +88,9 @@ def handle_payment_webhook(payload: dict, db: Session):
         select(CreditOrder).where(CreditOrder.razorpay_order_id == razorpay_order_id)
     ).first()
     if not order:
+        logger.warning(
+            f"Webhook received for unknown Razorpay order: {razorpay_order_id}"
+        )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Order not found",
@@ -111,17 +116,19 @@ def handle_payment_webhook(payload: dict, db: Session):
         user = db.exec(select(User).where(User.id == order.user_id)).first()
         user.credits += order.credits_requested
         db.add(user)
-        logger.success("Payment Successful. User credits added")
+        logger.success(
+            f"Payment captured. User {user.email} credited with {order.credits_requested}"
+        )
 
     elif event == "payment.failed":
         order.status = OrderStatus.failed
         payment_log.status = PaymentStatus.failed
+        logger.warning(f"Payment failed for order {order.id}")
 
     elif event == "refund.created":
         payment_log.status = PaymentStatus.refunded
-
+        logger.info(f"Refund issued for payment {payment_id}")
     else:
-        # Unknown/unhandled event
         return
 
     db.add(order)

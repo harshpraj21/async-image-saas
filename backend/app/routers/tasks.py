@@ -10,6 +10,7 @@ from fastapi import (
     UploadFile,
     status,
 )
+from loguru import logger
 from sqlmodel import Session
 
 from app.core.db import get_session
@@ -48,6 +49,9 @@ def submit_task(
     db: Annotated[Session, Depends(get_session)],
 ):
     if current_user.credits < 1:
+        logger.warning(
+            f"User {current_user.email} tried to create task without enough credits"
+        )
         raise HTTPException(
             status_code=status.HTTP_402_PAYMENT_REQUIRED,
             detail="Insufficient credits.",
@@ -94,6 +98,7 @@ def delete_task_route(
 ):
     deleted = delete_task(db, task_id, current_user.id)
     if not deleted:
+        logger.warning(f"Delete failed. Task {task_id} not found for user {current_user.email}")
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Task not found"
         )
