@@ -13,18 +13,14 @@ app = FastAPI(title="Image SaaS API")
 if config.DEBUG:
     os.makedirs(config.UPLOAD_DIR, exist_ok=True)
     app.mount("/uploads", StaticFiles(directory=config.UPLOAD_DIR), name="uploads")
-    origins = ["*"]
-else:
-    origins = [config.FRONTEND_DOMAIN]
-
 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Allows frontend origins
+    allow_origins=config.ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],  # Allow all HTTP methods
-    allow_headers=["*"],  # Allow all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

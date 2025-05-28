@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,7 +9,7 @@ class BaseConfig(BaseSettings):
     )
 
     DEBUG: bool = True
-    FRONTEND_DOMAIN: Optional[str] = None 
+    ALLOWED_ORIGINS: str = ""
 
     DB_HOST: Optional[str] = None
     DB_PASSWORD: Optional[str] = None
@@ -23,14 +23,23 @@ class BaseConfig(BaseSettings):
 
     REDIS_URL: Optional[str] = None
 
-    # SUPABASE_STORAGE_URL: str=None
-    # SUPABASE_ACCESS_KEY: str=None
-    # SUPABASE_BUCKET_NAME: str=None
+    SUPABASE_URL: Optional[str] = None
+    SUPABASE_BUCKET_NAME: Optional[str] = None
+    SUPABASE_SECRET_KEY: Optional[str] = None
+
     UPLOAD_DIR: Optional[str] = None
 
     RAZORPAY_KEY_ID: Optional[str] = None
     RAZORPAY_KEY_SECRET: Optional[str] = None
     RAZORPAY_WEBHOOK_SECRET: Optional[str] = None
+
+    @property
+    def get_allowed_origins(self) -> List[str]:
+        return [
+            origin.strip()
+            for origin in self.ALLOWED_ORIGINS.split(",")
+            if origin.strip()
+        ]
 
 
 config = BaseConfig()

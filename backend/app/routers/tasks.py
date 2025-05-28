@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated
 from uuid import UUID
 from fastapi import (
     APIRouter,
@@ -10,7 +10,6 @@ from fastapi import (
     UploadFile,
     status,
 )
-from loguru import logger
 from sqlmodel import Session
 
 from app.core.db import get_session
