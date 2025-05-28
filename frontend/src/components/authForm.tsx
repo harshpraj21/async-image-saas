@@ -86,19 +86,19 @@ export function AuthForm({ type, className, ...props }: AuthFormProps) {
                 {!isLogin && (
                   <div className="grid gap-3">
                     <Label htmlFor="name">Name</Label>
-                    <Input id="name" {...register("name")} placeholder="John Doe" />
+                    <Input id="name" {...register("name")} placeholder="Enter your name" />
                     {errors.name && <p className="text-sm text-red-500">{String(errors.name.message)}</p>}
                   </div>
                 )}
 
                 <div className="grid gap-3">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" {...register("email")} placeholder="you@example.com" />
+                  <Input id="email" type="email" {...register("email")} placeholder="Enter your email" />
                   {errors.email && <p className="text-sm text-red-500">{String(errors.email.message)}</p>}
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="password">Password</Label>
-                  <Input id="password" type="password" {...register("password")} />
+                  <Input id="password" type="password" {...register("password")} placeholder="Enter secure password"/>
                   {errors.password && <p className="text-sm text-red-500">{String(errors.password.message)}</p>}
                 </div>
 
